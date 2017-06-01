@@ -1,2 +1,2 @@
-# tcomb-generate
-Transform tcomb type to generator(JSVerify or testcheck)
+# Runtypes-generate
+Transform runtypes type to generator(JSVerify or testcheck)
