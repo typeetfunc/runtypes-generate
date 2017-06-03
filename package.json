@@ -16,11 +16,14 @@
   "author": "Thomas Crockett",
   "license": "MIT",
   "dependencies": {
-    "jsverify": "0.8.2",
-    "testcheck": "0.1.4"
+    "jsverify": "https://github.com/jsverify/jsverify.git",
+    "testcheck": "0.1.4",
+    "runtypes": "0.10.1"
   },
   "devDependencies": {
     "@types/jest": "^18.1.1",
+    "lodash": "latest",
+    "@types/lodash": "latest",
     "jest": "^19.0.2",
     "ts-jest": "^19.0.0",
     "typescript": "2.2.1",
