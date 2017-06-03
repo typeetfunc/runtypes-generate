@@ -1,4 +1,4 @@
-import { Boolean, Number, String, Literal, Array, Tuple, Record, Union, Static } from '../../runtypes'
+import { Boolean, Number, String, Literal, Array, Tuple, Record, Union, Static } from 'runtypes'
 import { makeJsverifyArbitrary } from './index'
 import * as _ from 'lodash';
 import * as jsc from 'jsverify';
