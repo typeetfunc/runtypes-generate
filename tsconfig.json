@@ -8,7 +8,8 @@
         "noUnusedParameters": false,
         "declaration": true,
         "sourceMap": false,
-        "outDir": "lib"
+        "outDir": "lib",
+        "lib": ["es5", "es2015"]
     },
     "include": [
         "src/**/*"

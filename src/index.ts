@@ -9,22 +9,41 @@ const types = {
     array: ({ element }) => jsc.array(makeJsverifyArbitrary(element)),
     boolean: () => jsc.bool,
     constraint: ({ constraint, correction, underlying, rightInverse = identity }) => correction ?
-        makeJsverifyArbitrary(underlying).smap(correction, rightInverse) :
-        jsc.suchthat(makeJsverifyArbitrary(underlying), constraint),
+      makeJsverifyArbitrary(underlying).smap(correction, rightInverse) :
+      jsc.suchthat(makeJsverifyArbitrary(underlying), constraint),
     dictionary: ({ value }) => jsc.dict(makeJsverifyArbitrary(value)),
     function: () => jsc.fn(jsc.json),
-    intersect: Intersect => jsc.suchthat(
-      jsc.oneof(Intersect.intersectees.map(intersect => makeJsverifyArbitrary(intersect))),
-      x => Intersect.guard(x)
-    ),
+    intersect: ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
+    .smap(tupleOfTypes => tupleOfTypes.reduce(
+      (acc, item) => Object.assign(acc, item)
+    ), identity),
     literal: ({ value }) => jsc.constant(value),
     number: () => jsc.number,
+    partial: ({ fields }) => {
+      var spec = {};
+      Object.keys(fields).forEach(fieldName => {
+        spec[fieldName] = jsc.oneof([
+          makeJsverifyArbitrary(fields[fieldName]),
+          jsc.constant(undefined)
+        ])
+      });
+      return jsc.record(spec)
+        .smap(rec => {
+          const recWithoutEmpty = {...rec};
+          Object.keys(recWithoutEmpty).forEach(key => {
+            if (recWithoutEmpty[key] === undefined) {
+              delete recWithoutEmpty[key];
+            }
+          })
+          return recWithoutEmpty;
+        }, identity);
+    },
     record: ({ fields }) => {
-        var spec = {};
-        Object.keys(fields).forEach(fieldName => {
-            spec[fieldName] = makeJsverifyArbitrary(fields[fieldName]);
-        });
-        return jsc.record(spec);
+      var spec = {};
+      Object.keys(fields).forEach(fieldName => {
+        spec[fieldName] = makeJsverifyArbitrary(fields[fieldName]);
+      });
+      return jsc.record(spec);
     },
     string: () => jsc.string,
     tuple: ({ components }) => jsc.tuple(components.map(component => makeJsverifyArbitrary(component))),
