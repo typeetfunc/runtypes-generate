@@ -16,7 +16,8 @@
   "author": "Thomas Crockett",
   "license": "MIT",
   "dependencies": {
-    "jsverify": "https://github.com/jsverify/jsverify.git"
+    "jsverify": "https://github.com/jsverify/jsverify.git",
+    "runtypes": "https://github.com/typeetfunc/runtypes.git"
   },
   "devDependencies": {
     "@types/jest": "^18.1.1",
@@ -26,7 +27,6 @@
     "ts-jest": "^19.0.0",
     "typescript": "2.2.1",
     "xyz": "^2.1.0",
-    "runtypes": "https://github.com/typeetfunc/runtypes.git",
     "ts-node": "2.1.0"
   },
   "keywords:": [

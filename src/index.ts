@@ -4,13 +4,11 @@ function identity(x: any) {
     return x;
 }
 
-const types = {
+const REGISTRY = {
     always: () => jsc.json,
     array: ({ element }) => jsc.array(makeJsverifyArbitrary(element)),
     boolean: () => jsc.bool,
-    constraint: ({ constraint, correction, underlying, rightInverse = identity }) => correction ?
-      makeJsverifyArbitrary(underlying).smap(correction, rightInverse) :
-      jsc.suchthat(makeJsverifyArbitrary(underlying), constraint),
+    constraint: ({ constraint, underlying }) => jsc.suchthat(makeJsverifyArbitrary(underlying), constraint),
     dictionary: ({ value }) => jsc.dict(makeJsverifyArbitrary(value)),
     function: () => jsc.fn(jsc.json),
     intersect: ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
@@ -51,11 +49,23 @@ const types = {
     void: () => jsc.elements([null, undefined])
 };
 
-
 export function makeJsverifyArbitrary(type) {
-    if (type.tag && types.hasOwnProperty(type.tag)) {
-        return types[type.tag](type);
+    if (type.tag && REGISTRY.hasOwnProperty(type.tag)) {
+        return REGISTRY[type.tag](type);
     }
     throw new Error('Can not generate this type');
 }
 
+export function addTypeToRegistry(tag, generator) {
+  REGISTRY[tag] = generator;
+}
+
+export function generateAndCheck(rt, opts?: jsc.Options) {
+  return () => {
+    const arbitrary = makeJsverifyArbitrary(rt)
+    jsc.assert(jsc.forall(arbitrary, function arbitraryIsChecked(anything) {
+      rt.check(anything)
+      return true;
+    }), opts)
+  };
+}
