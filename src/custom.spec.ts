@@ -1,4 +1,4 @@
-import { Boolean, String, Literal, Array, Record, Partial, Union, Void, Custom } from '../../runtypes'
+import { Boolean, String, Literal, Array, Record, Partial, Union, Void, Custom } from 'runtypes'
 import { generateAndCheck } from './index';
 import * as jsc from 'jsverify';
 import { range, zip } from 'lodash'
@@ -32,7 +32,8 @@ const ArrayWithContains = (arrRt, item, count) => Custom(arrRt, (list, args) => 
 }, contains.name, {count, item})
 
 
-function generatorContains({ underlying, args }) {
+function generatorContains(rt: Custom<any, 'contains', any>) {
+  const { underlying, args } = rt
   return makeJsverifyArbitrary(underlying).smap(coll => {
     const res = contains(
       coll, args,
