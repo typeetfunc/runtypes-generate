@@ -3,7 +3,7 @@
 [![standard-readme compliant](https://img.shields.io/badge/standard--readme-OK-green.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 [![npm version](https://badge.fury.io/js/runtypes-generate.svg)](https://badge.fury.io/js/runtypes-generate)
 
-`Runtypes-generate` convert [`runtypes` type](https://github.com/pelotom/runtypes) to [jsverify arbitrary](https://github.com/jsverify/jsverify.
+`Runtypes-generate` convert [`runtypes` type](https://github.com/pelotom/runtypes) to [jsverify arbitrary](https://github.com/jsverify/jsverify).
 
 ## Table of Contents
 
