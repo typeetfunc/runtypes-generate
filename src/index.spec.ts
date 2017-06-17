@@ -1,4 +1,4 @@
-import { Boolean, Number, String, Literal, Array, Tuple, Record, Union } from '../../runtypes'
+import { Boolean, Number, String, Literal, Array, Tuple, Record, Union } from 'runtypes'
 import { generateAndCheck } from './index';
 
 describe('SpaceObject', () => {

@@ -17,12 +17,12 @@
   "license": "MIT",
   "dependencies": {
     "jsverify": "https://github.com/jsverify/jsverify.git",
-    "runtypes": "https://github.com/typeetfunc/runtypes.git#f454f18a58c01ae784dbf543abb91143c89e0c68"
+    "runtypes": "https://github.com/typeetfunc/runtypes.git#f454f18a58c01ae784dbf543abb91143c89e0c68",
+    "lodash": "^4.17.4",
+    "@types/lodash": "^4.14.66"
   },
   "devDependencies": {
     "@types/jest": "^18.1.1",
-    "lodash": "latest",
-    "@types/lodash": "latest",
     "jest": "^19.0.2",
     "ts-jest": "^19.0.0",
     "typescript": "2.2.1",
@@ -35,9 +35,9 @@
     "validation",
     "typescript",
     "spec",
+    "runtypes",
     "property-based",
-    "jsverify",
-    "testcheck"
+    "jsverify"
   ],
   "repository": {
     "type": "git",
@@ -54,5 +54,8 @@
       "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor"
     },
     "testEnvironment": "node"
-  }
+  },
+  "files": [
+    "/lib"
+  ]
 }

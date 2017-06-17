@@ -1,4 +1,5 @@
 import * as jsc from 'jsverify';
+import { Reflect } from 'runtypes';
 import { flatten, every, some, find } from 'lodash';
 
 function identity(x: any) {
@@ -133,24 +134,24 @@ const REGISTRY = {
     void: () => jsc.elements([null, undefined])
 };
 
-export function makeJsverifyArbitrary(type) {
+export function makeJsverifyArbitrary<T extends Reflect>(type: T): jsc.Arbitrary<any> {
     if (type.tag && REGISTRY.hasOwnProperty(type.tag)) {
         return REGISTRY[type.tag](type);
     }
     throw new Error('Can not generate this type');
 }
 
-export function addTypeToRegistry(tag, generator) {
+export function addTypeToRegistry<T extends Reflect>(tag: string, generator: (x: T) => jsc.Arbitrary<any>): void {
   CUSTOM_REGISTRY[tag] = generator;
 }
 
-export function addTypeToIntersectRegistry(tags, generator) {
+export function addTypeToIntersectRegistry<T extends Reflect>(tags: string[], generator: (x: T) => jsc.Arbitrary<any>): void {
   CUSTOM_INTERSECT_REGISTRY.push([
     new Set(tags), generator
   ]);
 }
 
-export function generateAndCheck(rt, opts?: jsc.Options) {
+export function generateAndCheck<T extends Reflect>(rt: T, opts?: jsc.Options) {
   return () => {
     const arbitrary = makeJsverifyArbitrary(rt)
     jsc.assert(jsc.forall(arbitrary, function arbitraryIsChecked(anything) {
