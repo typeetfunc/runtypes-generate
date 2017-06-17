@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "jsverify": "https://github.com/jsverify/jsverify.git",
-    "runtypes": "https://github.com/typeetfunc/runtypes.git#d7d154f368d63298d9d97a0f58e27058a23be260"
+    "runtypes": "https://github.com/typeetfunc/runtypes.git#f454f18a58c01ae784dbf543abb91143c89e0c68"
   },
   "devDependencies": {
     "@types/jest": "^18.1.1",

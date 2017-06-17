@@ -4,11 +4,23 @@ function identity(x: any) {
     return x;
 }
 
+const CUSTOM_REGISTRY = {};
+
 const REGISTRY = {
     always: () => jsc.json,
     array: ({ element }) => jsc.array(makeJsverifyArbitrary(element)),
     boolean: () => jsc.bool,
-    constraint: ({ constraint, underlying }) => jsc.suchthat(makeJsverifyArbitrary(underlying), constraint),
+    constraint: ({ constraint, underlying, args }) => {
+      if (args) {
+        if (CUSTOM_REGISTRY[args.tag]) {
+          return CUSTOM_REGISTRY[args.tag]({ constraint, underlying, args });
+        } else {
+          throw new Error(`Please add generator for ${args.tag} with addTypeToRegistry`);
+        }
+      } else {
+        return jsc.suchthat(makeJsverifyArbitrary(underlying), constraint)
+      }
+    },
     dictionary: ({ value }) => jsc.dict(makeJsverifyArbitrary(value)),
     function: () => jsc.fn(jsc.json),
     intersect: ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
@@ -57,7 +69,7 @@ export function makeJsverifyArbitrary(type) {
 }
 
 export function addTypeToRegistry(tag, generator) {
-  REGISTRY[tag] = generator;
+  CUSTOM_REGISTRY[tag] = generator;
 }
 
 export function generateAndCheck(rt, opts?: jsc.Options) {
