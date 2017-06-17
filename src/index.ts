@@ -1,10 +1,77 @@
 import * as jsc from 'jsverify';
+import { flatten, every, some, find } from 'lodash';
 
 function identity(x: any) {
     return x;
 }
 
+function guardEvery(rts, x) {
+  return every(rts, rt => (rt as any).guard(x))
+}
+
+function findIntersectInRegistry(intersectees, registry, getTag) {
+  return registry.reduce(
+    (acc, [setTags, func]) => {
+      if (every(intersectees, intersect => setTags.has(getTag(intersect)))){
+        return func;
+      }
+      return acc;
+    },
+    null
+  );
+}
+
+function defaultIntersectHandle({ intersectees }) {
+  const allIntersectees = jsc.tuple(
+    intersectees.map(intersect => makeJsverifyArbitrary(intersect))
+  );
+
+  return jsc.suchthat(
+    allIntersectees,
+    tuple => some(tuple, x => guardEvery(intersectees, x))
+  )
+  .smap(
+    tuple => find(tuple, x => guardEvery(intersectees, x)),
+    identity
+  );
+}
+
 const CUSTOM_REGISTRY = {};
+const CUSTOM_INTERSECT_REGISTRY: any[] = [];
+const INTERSECT_REGISTRY = [
+  [new Set(['partial', 'record']), ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
+    .smap(tupleOfTypes => tupleOfTypes.reduce(
+      (acc, item) => Object.assign(acc, item)
+    ), identity)
+  ],
+  [new Set(['union']),  ({ intersectees }) => {
+    const alternatives = flatten(
+      intersectees.map(intersect => intersect.alternatives)
+    )
+    const allAltArb = jsc.tuple(alternatives.map(makeJsverifyArbitrary))
+
+    return jsc.bless({
+      ...allAltArb,
+      generator: allAltArb.generator.flatmap(tuple => {
+        const onlyIntersectees = tuple.filter(
+          x => guardEvery(intersectees, x)
+        )
+
+        return jsc.elements(onlyIntersectees).generator;
+      })
+    })
+  }],
+  [new Set(['constraint']), ({ intersectees }) => {
+    const handler = findIntersectInRegistry(
+      intersectees,
+      CUSTOM_INTERSECT_REGISTRY,
+      x => x.args && x.args.tag
+    ) || defaultIntersectHandle;
+
+    return handler({ intersectees })
+  }]
+];
+
 
 const REGISTRY = {
     always: () => jsc.json,
@@ -23,10 +90,15 @@ const REGISTRY = {
     },
     dictionary: ({ value }) => jsc.dict(makeJsverifyArbitrary(value)),
     function: () => jsc.fn(jsc.json),
-    intersect: ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
-    .smap(tupleOfTypes => tupleOfTypes.reduce(
-      (acc, item) => Object.assign(acc, item)
-    ), identity),
+    intersect: ({ intersectees }) => {
+      const handler = findIntersectInRegistry(
+        intersectees,
+        INTERSECT_REGISTRY,
+        x => x.tag
+      ) || defaultIntersectHandle;
+
+      return handler({ intersectees });
+    },
     literal: ({ value }) => jsc.constant(value),
     number: () => jsc.number,
     partial: ({ fields }) => {
@@ -70,6 +142,12 @@ export function makeJsverifyArbitrary(type) {
 
 export function addTypeToRegistry(tag, generator) {
   CUSTOM_REGISTRY[tag] = generator;
+}
+
+export function addTypeToIntersectRegistry(tags, generator) {
+  CUSTOM_INTERSECT_REGISTRY.push([
+    new Set(tags), generator
+  ]);
 }
 
 export function generateAndCheck(rt, opts?: jsc.Options) {
