@@ -10,10 +10,10 @@
     "develop": "jest --watchAll",
     "release": "npm run release:patch",
     "release:patch": "xyz --increment patch",
-    "release:minor": "xyz --increment minor",
+    "release:minor": "xyz --Tincrement minor",
     "release:major": "xyz --increment major"
   },
-  "author": "Thomas Crockett",
+  "author": "Andrey Melnikov",
   "license": "MIT",
   "dependencies": {
     "jsverify": "https://github.com/jsverify/jsverify.git",
