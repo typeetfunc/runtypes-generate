@@ -10,7 +10,7 @@
     "develop": "jest --watchAll",
     "release": "npm run release:patch",
     "release:patch": "xyz --increment patch",
-    "release:minor": "xyz --Tincrement minor",
+    "release:minor": "xyz --increment minor",
     "release:major": "xyz --increment major"
   },
   "author": "Andrey Melnikov",
