@@ -2,8 +2,13 @@ import * as jsc from 'jsverify';
 import { Reflect } from 'runtypes';
 import { flatten, every, some, find } from 'lodash';
 
+declare module 'jsverify' {
+  function record<T>(spec: { [s: string]: T }): jsc.Arbitrary<T>;
+  function oneof<T>(gs: jsc.Arbitrary<T>[]): jsc.Arbitrary<T>;
+}
+
 function identity(x: any) {
-    return x;
+  return x;
 }
 
 function guardEvery(rts, x) {

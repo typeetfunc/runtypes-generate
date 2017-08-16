@@ -16,8 +16,8 @@
   "author": "Andrey Melnikov",
   "license": "MIT",
   "dependencies": {
-    "jsverify": "https://github.com/jsverify/jsverify.git",
-    "runtypes": "https://github.com/typeetfunc/runtypes.git#f454f18a58c01ae784dbf543abb91143c89e0c68",
+    "jsverify": "^0.8.2",
+    "runtypes": "^0.11.0",
     "lodash": "^4.17.4",
     "@types/lodash": "^4.14.66"
   },
