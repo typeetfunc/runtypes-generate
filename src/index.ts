@@ -1,14 +1,10 @@
 import * as jsc from 'jsverify';
 import { Reflect } from 'runtypes';
-import { flatten, every, some, find } from 'lodash';
+import { flatten, every, some, find, identity, pick, keys } from 'lodash';
 
 declare module 'jsverify' {
   function record<T>(spec: { [s: string]: T }): jsc.Arbitrary<T>;
   function oneof<T>(gs: jsc.Arbitrary<T>[]): jsc.Arbitrary<T>;
-}
-
-function identity(x: any) {
-  return x;
 }
 
 function guardEvery(rts, x) {
@@ -46,9 +42,12 @@ const CUSTOM_REGISTRY = {};
 const CUSTOM_INTERSECT_REGISTRY: any[] = [];
 const INTERSECT_REGISTRY = [
   [new Set(['partial', 'record']), ({ intersectees }) => jsc.tuple(intersectees.map(intersect => makeJsverifyArbitrary(intersect)))
-    .smap(tupleOfTypes => tupleOfTypes.reduce(
-      (acc, item) => Object.assign(acc, item)
-    ), identity)
+    .smap(
+      tupleOfTypes => tupleOfTypes.reduce(
+        (acc, item) => Object.assign(acc, item)
+      ),
+      object => intersectees.map(({ fields }) => pick(object, keys(fields)))
+    )
   ],
   [new Set(['union']),  ({ intersectees }) => {
     const alternatives = flatten(
